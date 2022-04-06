@@ -1,15 +1,11 @@
+
+import type { Selector } from './commands';
 import {
   ErrorListener,
-  MacroDictionary,
-  ParseMode,
-  ParserErrorCode,
-  MathfieldErrorCode,
-  Registers,
+  MacroDictionary, MathfieldErrorCode, ParseMode,
+  ParserErrorCode, Registers
 } from './core';
 import type { Mathfield, Range } from './mathfield';
-import type { Selector } from './commands';
-import type { ErrorCode as MathJsonErrorCode } from '@cortex-js/compute-engine/dist/math-json.min.esm.js';
-import { ComputeEngine } from '@cortex-js/compute-engine';
 
 /**
  * Specify behaviour for origin validation.
@@ -1029,7 +1025,7 @@ export type MathfieldOptions = LayoutOptions &
      *
      */
     onError: ErrorListener<
-      ParserErrorCode | MathfieldErrorCode | MathJsonErrorCode
+      ParserErrorCode | MathfieldErrorCode
     >;
   };
 

@@ -1,103 +1,80 @@
-import type { ParseMode, Style } from '../public/core';
-import type { Keybinding, KeyboardLayoutName } from '../public/options';
-import type {
-  Mathfield,
-  InsertOptions,
-  OutputFormat,
-  Offset,
-  Range,
-  Selection,
-  FindOptions,
-  ApplyStyleOptions,
-  ReplacementFunction,
-  VirtualKeyboardInterface,
-} from '../public/mathfield';
-
+// @ts-ignore-error
+import CORE_STYLESHEET from '../../css/core.less';
+// @ts-ignore-error
+import MATHFIELD_STYLESHEET from '../../css/mathfield.less';
+import { canVibrate, isBrowser, isTouchCapable } from '../common/capabilities';
+import { hashCode } from '../common/hash-code';
+import { inject as injectStylesheet, Stylesheet } from '../common/stylesheet';
+import { LatexGroupAtom } from '../core-atoms/latex';
+import { PlaceholderAtom } from '../core-atoms/placeholder';
+import { NormalizedMacroDictionary } from '../core-definitions/definitions-utils';
 import { Atom } from '../core/atom-class';
-
+import { defaultBackgroundColorMap, defaultColorMap } from '../core/color';
 import { loadFonts } from '../core/fonts';
-import { Stylesheet, inject as injectStylesheet } from '../common/stylesheet';
-
-import { deleteRange, getMode, isRange, ModelPrivate } from '../editor/model';
-import { applyStyle } from '../editor-model/styling';
-import { delegateKeyboardEvents, KeyboardDelegate } from '../editor/keyboard';
-import { UndoRecord, UndoManager } from '../editor/undo';
-import { disposePopover, updatePopoverPosition } from '../editor/popover';
-import { localize as l10n } from '../editor/l10n';
-import {
-  HAPTIC_FEEDBACK_DURATION,
-  SelectorPrivate,
-  perform,
-  getCommandTarget,
-} from '../editor/commands';
-import { find, replace } from '../editor-model/find';
-import { complete } from './autocomplete';
-import { requestUpdate, render } from './render';
-import {
-  MathfieldOptionsPrivate,
-  update as updateOptions,
-  getDefault as getDefaultOptions,
-  get as getOptions,
-  effectiveMode,
-  DEFAULT_KEYBOARD_TOGGLE_GLYPH,
-} from '../editor/options';
+import { parseLatex } from '../core/parser';
+import { addColumnAfter, addRowAfter } from '../editor-model/array';
 import {
   removeComposition,
-  updateComposition,
+  updateComposition
 } from '../editor-model/composition';
-import { addRowAfter, addColumnAfter } from '../editor-model/array';
-import { onTypedText, onKeystroke } from './keyboard-input';
-
+import { find, replace } from '../editor-model/find';
+import { range } from '../editor-model/selection-utils';
+import { applyStyle } from '../editor-model/styling';
+import {
+  getCommandTarget, HAPTIC_FEEDBACK_DURATION, perform, SelectorPrivate
+} from '../editor/commands';
+import { normalizeKeybindings } from '../editor/keybindings';
+import { delegateKeyboardEvents, KeyboardDelegate } from '../editor/keyboard';
+import {
+  DEFAULT_KEYBOARD_LAYOUT, getActiveKeyboardLayout, setKeyboardLayoutLocale
+} from '../editor/keyboard-layout';
+import { localize as l10n } from '../editor/l10n';
+import { deleteRange, getMode, isRange, ModelPrivate } from '../editor/model';
+import {
+  DEFAULT_KEYBOARD_TOGGLE_GLYPH, effectiveMode, get as getOptions, getDefault as getDefaultOptions, MathfieldOptionsPrivate,
+  update as updateOptions
+} from '../editor/options';
+import { disposePopover, updatePopoverPosition } from '../editor/popover';
+import { UndoManager, UndoRecord } from '../editor/undo';
+import { VirtualKeyboard } from '../editor/virtual-keyboard';
+import type { ParseMode, Style } from '../public/core';
+import type {
+  ApplyStyleOptions, FindOptions, InsertOptions, Mathfield, Offset, OutputFormat, Range, ReplacementFunction, Selection, VirtualKeyboardInterface
+} from '../public/mathfield';
+import MathfieldElement from '../public/mathfield-element';
+import type { Keybinding, KeyboardLayoutName } from '../public/options';
+import { complete } from './autocomplete';
+import { attachButtonHandlers } from './buttons';
 import './commands';
+import { onKeystroke, onTypedText } from './keyboard-input';
+import { disposeKeystrokeCaption } from './keystroke-caption';
+import { ModeEditor } from './mode-editor';
+import { getLatexGroupBody } from './mode-editor-latex';
+import './mode-editor-math';
+import './mode-editor-text';
+import { offsetFromPoint, onPointerDown } from './pointer-input';
+import { VirtualKeyboardDelegate } from './remote-virtual-keyboard';
+import { render, requestUpdate } from './render';
 import './styling';
-
+import { validateStyle } from './styling';
 import {
   getCaretPoint,
   getSelectionBounds,
-  isValidMathfield,
-  on,
-  off,
-  Rect,
+  isValidMathfield, off, on, Rect
 } from './utils';
 
-import { attachButtonHandlers } from './buttons';
-import { onPointerDown, offsetFromPoint } from './pointer-input';
-import { normalizeKeybindings } from '../editor/keybindings';
-import {
-  setKeyboardLayoutLocale,
-  getActiveKeyboardLayout,
-  DEFAULT_KEYBOARD_LAYOUT,
-} from '../editor/keyboard-layout';
 
-import { VirtualKeyboard } from '../editor/virtual-keyboard';
 
-// @ts-ignore-error
-import MATHFIELD_STYLESHEET from '../../css/mathfield.less';
-// @ts-ignore-error
-import CORE_STYLESHEET from '../../css/core.less';
-import { range } from '../editor-model/selection-utils';
-import { LatexGroupAtom } from '../core-atoms/latex';
-import { parseLatex } from '../core/parser';
-import { ModeEditor } from './mode-editor';
-import './mode-editor-math';
-import { getLatexGroupBody } from './mode-editor-latex';
-import './mode-editor-text';
 
-import { VirtualKeyboardDelegate } from './remote-virtual-keyboard';
-import { defaultBackgroundColorMap, defaultColorMap } from '../core/color';
-import { canVibrate, isBrowser, isTouchCapable } from '../common/capabilities';
-import { NormalizedMacroDictionary } from '../core-definitions/definitions-utils';
-import { validateStyle } from './styling';
-import { hashCode } from '../common/hash-code';
-import { disposeKeystrokeCaption } from './keystroke-caption';
-import { PlaceholderAtom } from '../core-atoms/placeholder';
-import MathfieldElement from '../public/mathfield-element';
-import { ComputeEngine } from '@cortex-js/compute-engine';
+
+
+
+
+
 
 let CORE_STYLESHEET_HASH: string | undefined = undefined;
 let MATHFIELD_STYLESHEET_HASH: string | undefined = undefined;
 export class MathfieldPrivate implements Mathfield {
-  _computeEngine: ComputeEngine;
   model: ModelPrivate;
   options: Required<MathfieldOptionsPrivate>;
 
@@ -162,22 +139,13 @@ export class MathfieldPrivate implements Mathfield {
 
   /**
    *
-   * - `options.computeEngine`: An instance of a `ComputeEngine`. It is used to parse and serialize
-   * LaTeX strings, using the information contained in the dictionaries
-   * of the Compute Engine to determine, for example, which symbols are
-   * numbers or which are functions, and therefore corectly interpret
-   * `bf(x)` as `b \\times f(x)`.
-   *
-   * If no instance is provided, a new, default, one is created.
    *
    * @param element - The DOM element that this mathfield is attached to.
    * Note that `element.mathfield` is this object.
    */
   constructor(
     element: HTMLElement & { mathfield?: MathfieldPrivate },
-    options: Partial<MathfieldOptionsPrivate> & {
-      computeEngine?: ComputeEngine;
-    }
+    options: Partial<MathfieldOptionsPrivate>
   ) {
     // Setup default config options
     this.options = updateOptions(
@@ -195,7 +163,6 @@ export class MathfieldPrivate implements Mathfield {
             ...options,
           }
     );
-    if (options.computeEngine) this._computeEngine = options.computeEngine;
 
     this._placeholders = new Map();
 
@@ -564,11 +531,6 @@ export class MathfieldPrivate implements Mathfield {
     if (isBrowser()) {
       document.fonts.ready.then(() => render(this));
     }
-  }
-
-  get computeEngine(): ComputeEngine {
-    if (!this._computeEngine) this._computeEngine = new ComputeEngine();
-    return this._computeEngine;
   }
 
   get virtualKeyboardState(): 'hidden' | 'visible' {

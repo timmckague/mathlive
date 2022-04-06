@@ -1,45 +1,39 @@
 /* eslint-disable no-new */
-import type {
-  RemoteVirtualKeyboardOptions,
-  TextToSpeechOptions,
-} from './public/options';
-import type {
-  ErrorListener,
-  ParserErrorCode,
-  MathfieldErrorCode,
-  MacroDictionary,
-  Registers,
-} from './public/core';
-
-import { Atom } from './core/atom-class';
-import { parseLatex } from './core/parser';
-import { adjustInterAtomSpacing, coalesce, makeStruts, Box } from './core/box';
-import { getMacros } from './core-definitions/definitions';
 import {
-  AutoRenderOptionsPrivate,
-  autoRenderMathInElement,
+  autoRenderMathInElement, AutoRenderOptionsPrivate
 } from './addons/auto-render';
 import MathLiveDebug, {
   asciiMathToLatex,
-  latexToAsciiMath,
+  latexToAsciiMath
 } from './addons/debug';
-import { atomToSpeakableText } from './editor/atom-to-speakable-text';
-import { atomsToMathML } from './addons/math-ml';
-
 import './addons/definitions-metadata';
-
-import './editor/virtual-keyboard-commands';
-import { RemoteVirtualKeyboard } from './editor-mathfield/remote-virtual-keyboard';
+import { atomsToMathML } from './addons/math-ml';
+import { isBrowser, throwIfNotInBrowser } from './common/capabilities';
+import { getMacros } from './core-definitions/definitions';
+import { Atom } from './core/atom-class';
+import { adjustInterAtomSpacing, Box, coalesce, makeStruts } from './core/box';
 import { Context } from './core/context';
 import { DEFAULT_FONT_SIZE } from './core/font-metrics';
-import { l10n } from './editor/l10n';
-import { typeset } from './core/typeset';
+import { parseLatex } from './core/parser';
 import { getDefaultRegisters } from './core/registers';
-import { isBrowser, throwIfNotInBrowser } from './common/capabilities';
+import { typeset } from './core/typeset';
+import { RemoteVirtualKeyboard } from './editor-mathfield/remote-virtual-keyboard';
+import { atomToSpeakableText } from './editor/atom-to-speakable-text';
+import { l10n } from './editor/l10n';
+import './editor/virtual-keyboard-commands';
+import type {
+  ErrorListener, MacroDictionary, MathfieldErrorCode, ParserErrorCode, Registers
+} from './public/core';
+import type {
+  RemoteVirtualKeyboardOptions,
+  TextToSpeechOptions
+} from './public/options';
+
+
+
 
 export { MathfieldElement } from './public/mathfield-element';
 
-import { version as computeEngineVersion } from '@cortex-js/compute-engine';
 
 export function makeSharedVirtualKeyboard(
   options: Partial<RemoteVirtualKeyboardOptions>
@@ -222,7 +216,6 @@ export function renderMathInElement(
 // This SDK_VERSION variable will be replaced during the build process.
 export const version = {
   mathlive: '{{SDK_VERSION}}',
-  computeEngine: computeEngineVersion,
 };
 
 export const debug = {

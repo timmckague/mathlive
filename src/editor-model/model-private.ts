@@ -1,38 +1,28 @@
-import type {
-  Model,
-  Mathfield,
-  Offset,
-  Range,
-  Selection,
-  OutputFormat,
-} from '../public/mathfield';
-
-import type { MathfieldPrivate } from '../editor-mathfield/mathfield-private';
-
+import { atomsToMathML } from '../addons/math-ml';
 import { Atom, Branch, ToLatexOptions } from '../core/atom-class';
 import { joinLatex } from '../core/tokenizer';
-
-import { ComputeEngine } from '@cortex-js/compute-engine';
-
-import { atomsToMathML } from '../addons/math-ml';
-
+import type { MathfieldPrivate } from '../editor-mathfield/mathfield-private';
 import { atomToAsciiMath } from '../editor/atom-to-ascii-math';
 import { atomToSpeakableText } from '../editor/atom-to-speakable-text';
-
+import type {
+  Mathfield, Model, Offset, OutputFormat, Range,
+  Selection
+} from '../public/mathfield';
 import {
   contentDidChange,
   ModelListeners,
-  selectionDidChange,
+  selectionDidChange
 } from './listeners';
-import {
-  ModelOptions,
-  ModelHooks,
-  isOffset,
-  isSelection,
-  isRange,
-  AnnounceVerb,
-} from './utils';
 import { compareSelection, range } from './selection-utils';
+import {
+  AnnounceVerb, isOffset, isRange, isSelection, ModelHooks, ModelOptions
+} from './utils';
+
+
+
+
+
+
 
 export type GetAtomOptions = {
   includeChildren?: boolean;
@@ -386,14 +376,7 @@ export class ModelPrivate implements Model {
     }
 
     if (format === 'math-json') {
-      try {
-        const expr = this.mathfield.computeEngine.parse(
-          Atom.serialize(atom, { expandMacro: false, defaultMode: 'math' })
-        );
-        return JSON.stringify(expr.json);
-      } catch (e) {
-        return JSON.stringify(['Error', 'Nothing', `'${e.toString()}'`]);
-      }
+      console.warn("Not implemented")
     }
 
     if (format === 'ascii-math') return atomToAsciiMath(atom);

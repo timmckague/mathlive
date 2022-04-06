@@ -44,8 +44,8 @@
     "useTabs": false
   },
   "engines": {
-    "npm": ">=8.5.0",
-    "node": ">=16.14.2"
+    "npm": ">=6",
+    "node": ">=14"
   },
   "browserslist": [
     "> 1%",
@@ -109,9 +109,6 @@
     "rollup-plugin-typescript2": "^0.31.1",
     "ts-jest": "^27.1.0",
     "typescript": "^4.5.2"
-  },
-  "dependencies": {
-    "@cortex-js/compute-engine": "^0.5.0"
   },
   "keywords": [
     "math",

@@ -1,32 +1,30 @@
 /* eslint-disable no-new */
-import { InsertOptions, Offset, OutputFormat } from '../public/mathfield';
-import { MathfieldPrivate } from './mathfield-private';
-
-import { requestUpdate } from './render';
-import { range } from '../editor-model/selection-utils';
-import { ModeEditor } from './mode-editor';
-import { ModelPrivate } from '../editor-model/model-private';
-
-import { Atom } from '../core/atom-class';
 import { ArrayAtom } from '../core-atoms/array';
-
+import { LeftRightAtom } from '../core-atoms/leftright';
+import { PlaceholderAtom } from '../core-atoms/placeholder';
+import { Atom } from '../core/atom-class';
+import { RIGHT_DELIM } from '../core/delimiters';
+import { parseLatex } from '../core/parser';
+import {
+  contentDidChange, placeholderDidChange, selectionDidChange
+} from '../editor-model/listeners';
+import { ModelPrivate } from '../editor-model/model-private';
+import { range } from '../editor-model/selection-utils';
+import { applyStyleToUnstyledAtoms } from '../editor-model/styling';
 import {
   parseMathString,
-  trimModeShiftCommand,
+  trimModeShiftCommand
 } from '../editor/parse-math-string';
-
 import type { Style } from '../public/core';
-import { LeftRightAtom } from '../core-atoms/leftright';
-import { RIGHT_DELIM } from '../core/delimiters';
-import {
-  contentDidChange,
-  selectionDidChange,
-  placeholderDidChange,
-} from '../editor-model/listeners';
-import { applyStyleToUnstyledAtoms } from '../editor-model/styling';
-import { parseLatex } from '../core/parser';
-import { PlaceholderAtom } from '../core-atoms/placeholder';
+import { InsertOptions, Offset, OutputFormat } from '../public/mathfield';
 import MathfieldElement from '../public/mathfield-element';
+import { MathfieldPrivate } from './mathfield-private';
+import { ModeEditor } from './mode-editor';
+import { requestUpdate } from './render';
+
+
+
+
 
 export class MathModeEditor extends ModeEditor {
   constructor() {
@@ -41,12 +39,13 @@ export class MathModeEditor extends ModeEditor {
     // Try to get a MathJSON data type
     const json = ev.clipboardData.getData('application/json');
     if (json) {
-      try {
-        text = mathfield.computeEngine.box(JSON.parse(json)).latex;
-        format = 'latex';
-      } catch {
-        text = '';
-      }
+      console.warn('Not Implemented')
+      // try {
+      //   text = mathfield.computeEngine.box(JSON.parse(json)).latex;
+      //   format = 'latex';
+      // } catch {
+      //   text = '';
+      // }
     }
 
     // If that didn't work, try some plain text
