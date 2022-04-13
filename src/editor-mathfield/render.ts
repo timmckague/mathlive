@@ -1,18 +1,16 @@
+import { atomsToMathML } from '../addons/math-ml';
+// import { updatePopoverPosition } from '../editor/popover';
+import { throwIfNotInBrowser } from '../common/capabilities';
 import { adjustInterAtomSpacing, makeStruts } from '../core/box';
-
+import { Atom, Context, DEFAULT_FONT_SIZE } from '../core/core';
+import type { MathfieldPrivate } from './mathfield-private';
 import {
-  Rect,
+  adjustForScrolling,
+  getAtomBounds,
   getSelectionBounds,
   isValidMathfield,
-  getAtomBounds,
-  adjustForScrolling,
+  Rect,
 } from './utils';
-import type { MathfieldPrivate } from './mathfield-private';
-
-import { atomsToMathML } from '../addons/math-ml';
-import { Atom, Context, DEFAULT_FONT_SIZE } from '../core/core';
-import { updatePopoverPosition } from '../editor/popover';
-import { throwIfNotInBrowser } from '../common/capabilities';
 
 /*
  * Return a hash (32-bit integer) representing the content of the mathfield
@@ -222,7 +220,7 @@ export function renderSelection(mathfield: MathfieldPrivate): void {
     //
     // 1.1. Display the popover relative to the location of the caret
     //
-    setTimeout(() => updatePopoverPosition(mathfield), 32);
+    // setTimeout(() => updatePopoverPosition(mathfield), 32);
 
     //
     // 1.2. Display the 'contains' highlight

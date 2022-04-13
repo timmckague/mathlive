@@ -1,20 +1,15 @@
-import { ParseMode } from '../public/core';
-
 import { LatexAtom } from '../core-atoms/latex';
 import { suggest } from '../core-definitions/definitions-utils';
-
 import type { ModelPrivate } from '../editor-model/model-private';
-
-import { hidePopover, showPopoverWithLatex } from '../editor/popover';
-
+import { ParseMode } from '../public/core';
 import type { MathfieldPrivate } from './mathfield-private';
-import { requestUpdate } from './render';
+import { ModeEditor } from './mode-editor';
 import {
-  getLatexGroupBody,
   getCommandSuggestionRange,
   getLatexGroup,
+  getLatexGroupBody,
 } from './mode-editor-latex';
-import { ModeEditor } from './mode-editor';
+import { requestUpdate } from './render';
 
 export function updateAutocomplete(
   mathfield: MathfieldPrivate,
@@ -31,7 +26,6 @@ export function updateAutocomplete(
   }
 
   if (!model.selectionIsCollapsed) {
-    hidePopover(mathfield);
     return;
   }
 
@@ -71,7 +65,6 @@ export function updateAutocomplete(
       command.forEach((x) => (x.isError = true));
     }
 
-    hidePopover(mathfield);
     return;
   }
 
@@ -92,8 +85,6 @@ export function updateAutocomplete(
     );
     requestUpdate(mathfield);
   }
-
-  showPopoverWithLatex(mathfield, suggestion, suggestions.length > 1);
 }
 
 export function acceptCommandSuggestion(model: ModelPrivate): boolean {
@@ -120,7 +111,6 @@ export function complete(
   completion: 'reject' | 'accept' | 'accept-suggestion' = 'accept',
   options?: { mode?: ParseMode; selectItem?: boolean }
 ): boolean {
-  hidePopover(mathfield);
   const latexGroup = getLatexGroup(mathfield.model);
   if (!latexGroup) return false;
 

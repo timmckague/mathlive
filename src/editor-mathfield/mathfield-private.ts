@@ -15,31 +15,48 @@ import { parseLatex } from '../core/parser';
 import { addColumnAfter, addRowAfter } from '../editor-model/array';
 import {
   removeComposition,
-  updateComposition
+  updateComposition,
 } from '../editor-model/composition';
 import { find, replace } from '../editor-model/find';
 import { range } from '../editor-model/selection-utils';
 import { applyStyle } from '../editor-model/styling';
 import {
-  getCommandTarget, HAPTIC_FEEDBACK_DURATION, perform, SelectorPrivate
+  getCommandTarget,
+  HAPTIC_FEEDBACK_DURATION,
+  perform,
+  SelectorPrivate,
 } from '../editor/commands';
 import { normalizeKeybindings } from '../editor/keybindings';
 import { delegateKeyboardEvents, KeyboardDelegate } from '../editor/keyboard';
 import {
-  DEFAULT_KEYBOARD_LAYOUT, getActiveKeyboardLayout, setKeyboardLayoutLocale
+  DEFAULT_KEYBOARD_LAYOUT,
+  getActiveKeyboardLayout,
+  setKeyboardLayoutLocale,
 } from '../editor/keyboard-layout';
 import { localize as l10n } from '../editor/l10n';
 import { deleteRange, getMode, isRange, ModelPrivate } from '../editor/model';
 import {
-  DEFAULT_KEYBOARD_TOGGLE_GLYPH, effectiveMode, get as getOptions, getDefault as getDefaultOptions, MathfieldOptionsPrivate,
-  update as updateOptions
+  DEFAULT_KEYBOARD_TOGGLE_GLYPH,
+  effectiveMode,
+  get as getOptions,
+  getDefault as getDefaultOptions,
+  MathfieldOptionsPrivate,
+  update as updateOptions,
 } from '../editor/options';
-import { disposePopover, updatePopoverPosition } from '../editor/popover';
 import { UndoManager, UndoRecord } from '../editor/undo';
 import { VirtualKeyboard } from '../editor/virtual-keyboard';
 import type { ParseMode, Style } from '../public/core';
 import type {
-  ApplyStyleOptions, FindOptions, InsertOptions, Mathfield, Offset, OutputFormat, Range, ReplacementFunction, Selection, VirtualKeyboardInterface
+  ApplyStyleOptions,
+  FindOptions,
+  InsertOptions,
+  Mathfield,
+  Offset,
+  OutputFormat,
+  Range,
+  ReplacementFunction,
+  Selection,
+  VirtualKeyboardInterface,
 } from '../public/mathfield';
 import MathfieldElement from '../public/mathfield-element';
 import type { Keybinding, KeyboardLayoutName } from '../public/options';
@@ -60,17 +77,11 @@ import { validateStyle } from './styling';
 import {
   getCaretPoint,
   getSelectionBounds,
-  isValidMathfield, off, on, Rect
+  isValidMathfield,
+  off,
+  on,
+  Rect,
 } from './utils';
-
-
-
-
-
-
-
-
-
 
 let CORE_STYLESHEET_HASH: string | undefined = undefined;
 let MATHFIELD_STYLESHEET_HASH: string | undefined = undefined;
@@ -785,7 +796,6 @@ export class MathfieldPrivate implements Mathfield {
       this.virtualKeyboard.dispose();
       delete this.virtualKeyboard;
     }
-    disposePopover(this);
     disposeKeystrokeCaption(this);
 
     this.stylesheets.forEach((x) => x?.release());
@@ -1316,7 +1326,6 @@ export class MathfieldPrivate implements Mathfield {
         this.executeCommand('showVirtualKeyboard');
       }
 
-      updatePopoverPosition(this);
       this.options.onFocus?.(this);
 
       // Save the current value.
@@ -1393,8 +1402,6 @@ export class MathfieldPrivate implements Mathfield {
     } else {
       this.element!.classList.add('ML__isNarrowWidth');
     }
-
-    updatePopoverPosition(this);
   }
 
   private onWheel(ev: WheelEvent): void {
